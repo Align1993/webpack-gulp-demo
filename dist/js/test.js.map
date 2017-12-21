@@ -1,1 +1,0 @@
-{"version":3,"sources":["test.js"],"names":["fn","console","log","module","exports"],"mappings":"AAAA,SAASA,KACRC,QAAQC,IAAI,KAGbC,OAAOC,QAAUJ","file":"test.js","sourcesContent":["function fn() {\r\n\tconsole.log(111);\r\n}\r\n\r\nmodule.exports = fn;"]}
