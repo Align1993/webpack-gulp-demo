@@ -1,16 +1,74 @@
-var gulp = require('gulp');
-var uglify = require('gulp-uglify');
+const gulp = require('gulp');
+const gutil = require('gulp-util');
+const uglify = require('gulp-uglify');
+const watchPath = require('gulp-watch-path');
+const sourcemaps = require('gulp-sourcemaps');
+const minifycss = require('gulp-minify-css');
+const autoprefixer = require('gulp-less');
+const less = require('gulp-autoprefixer');
+const handleError = function (err) {
+	var colors = gutil.colors
+	console.log('\n')
+	gutil.log(colors.red('Error!'))
+	gutil.log('fileName: ' + colors.red(err.fileName))
+	gutil.log('lineNumber: ' + colors.red(err.lineNumber))
+	gutil.log('message: ' + err.message)
+	gutil.log('plugin: ' + colors.yellow(err.plugin))
+}
+const combiner = require('stream-combiner2')
+gulp.task('default', function () {
+	gutil.log('message')
+	gutil.log(gutil.colors.red('error'))
+	gutil.log(gutil.colors.green('message:') + "some")
+})
+gulp.task('uglifyjs', function () {
+    gulp.src('src/js/**/*.js')
+        .pipe(uglify())
+        .pipe(gulp.dest('www/js'))
+})
+gulp.task('watchjs', function () {
+	gulp.watch('./src/js/**/*.js',  function (event) {
+		console.log(event);
+		var paths = watchPath(event, 'src/', 'dist/')
+		gutil.log(gutil.colors.green(event.type) + ' ' + paths.srcPath)
+		gutil.log('Dist ' + paths.distPath)
+		var combined = combiner.obj([
+            gulp.src(paths.srcPath),
+            sourcemaps.init(),
+            uglify(),
+            sourcemaps.write('./'),
+            gulp.dest(paths.distDir)
+			])
+		combined.on('error', handleError)
+	
+		})
+})
 
-gulp.task('script ', function() {
-     // 找到文件
-     gulp.src('src/*.js')
-     // 压缩文件
 
-     .pipe(uglify())
-     // 另存压缩后的文件
-     .pipe(gulp.dest('www/js'))
+
+gulp.task('watchcss', function () {
+	gulp.watch('src/css/**/*.css', function (event) {
+		var paths = watchPath(event, 'src/', 'dist/')
+		gutil.log(gutil.colors.green(event.type) + " " + paths.srcPath)
+		gutil.log('Dist' + paths.distPath)
+		gulp.src(paths.srcPath)
+		    .pipe(sourcemaps.init())
+		    .pipe(autoprefixer({
+		    	browsers: 'last 2 versions'
+		    	}))
+		    .pipe(minifycss())
+		    .pipe(sourcemaps.write('./')) 
+		    .pipe(gulp.dest(paths.distDir))
+		})
 	})
-
-gulp.watch('js/**/*.js', function(event) {
-	console.log('File' + event.path + ' was ' + event.type + ', running tasks...');
-	})
+gulp.task('minifycss', function () {
+    gulp.src('src/css/**/*.css')
+        .pipe(sourcemaps.init())
+        .pipe(autoprefixer({
+          browsers: 'last 2 versions'
+        }))
+        .pipe(minifycss())
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest('dist/css/'))
+}) // 一次编译所有css文件
+gulp.task('default', ['watchjs', 'watchcss'])

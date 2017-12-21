@@ -1,0 +1,1 @@
+{"version":3,"sources":["test.css"],"names":[],"mappings":"AAAA,KACC,iBAAA,KACA,MAAA,KACA,UAAA,KAED,MACI,QAAA,YAAA,QAAA,YAAA,QAAA","file":"test.css","sourcesContent":["body{\r\n\tbackground-color: pink;\r\n\tcolor: white;\r\n\tfont-size: 16px;\r\n}\r\n.demo {\r\n    display:flex;\r\n}"]}
