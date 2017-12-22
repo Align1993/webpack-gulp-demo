@@ -15,7 +15,7 @@ const handleError = function (err) {
 	gutil.log('message: ' + err.message)
 	gutil.log('plugin: ' + colors.yellow(err.plugin))
 }
-const combiner = require('stream-combiner2')
+const combiner = require('stream-combiner2') // 捕获错误信息。
 gulp.task('default', function () {
 	gutil.log('message')
 	gutil.log(gutil.colors.red('error'))
@@ -71,4 +71,39 @@ gulp.task('minifycss', function () {
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('dist/css/'))
 }) // 一次编译所有css文件
-gulp.task('default', ['watchjs', 'watchcss'])
+
+gulp.task('watchless', function () {
+	gulp.watch('src/less/**/*.less',  function (event) {
+		var paths = watchPath(event, 'src/less/', 'dist/css/')
+		gutil.log(gutil.colors.green(event.type) + ' ' + paths.srcPath)
+		gutil.log('Dist ' + paths.distPath)
+		var combined = combiner.obj([
+            gulp.src(paths.srcPath),
+            sourcemaps.init(),
+            autoprefixer({
+            	browsers: 'last 2 versions'
+            	}),
+            less(),
+            minifycss(),
+            sourcemaps.write('./'),
+            gulp.dest(paths.distDir)
+			])
+		combined.on('error', handleError)
+		})
+	})
+
+gulp.task('lesscss', function () {
+	var combined = combiner.obj([
+        gulp.src('src/less/**/*.less'),
+        sourcemaps.init(),
+        autoprefixer({
+        	browsers: 'last 2 versions'
+        	}),
+        less(),
+        minifycss(),
+        sourcemaps.write('./'),
+        gulp.dest('dist/css/')
+		])
+	combined.on('error', handleError)
+	})
+gulp.task('default', ['watchjs', 'watchcss', 'watchless'])
