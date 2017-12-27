@@ -1,0 +1,5 @@
+{
+	"port": 1993,
+	"root": "webpack-demo/dist",
+	"indexPage": "index.html"
+}
