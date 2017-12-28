@@ -1,5 +1,6 @@
 const path = require('path');
 
+
 module.exports = {
 	entry: './src/index.js',
 	output: {
@@ -7,7 +8,7 @@ module.exports = {
 		path: path.resolve(__dirname, 'dist')
 	},
 	devServer: {
-		contentBase: path.join(__dirname, "dist"),
+		contentBase: path.join(__dirname, "dist"), // 获得当前文件所在目录的完整目录名：
 		inline: true,
 		// compress: true,
 		port: 3333
