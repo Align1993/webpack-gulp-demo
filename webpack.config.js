@@ -1,8 +1,12 @@
 const path = require('path');
+const webpack = require('webpack');
 
 
 module.exports = {
-	entry: './src/index.js',
+	entry: [
+       'webpack/hot/only-dev-server',
+	   './src/index.js'
+	   ],
 	output: {
 		filename: 'bundle.js',
 		path: path.resolve(__dirname, 'dist')
@@ -17,18 +21,24 @@ module.exports = {
 		rules: [
 		  { test: /\.css$/, loader: 'style-loader!css-loader' },
 		  { test: /\.less$/, loader: 'style-loader!css-loader!less-loader'},
-		  {test: /\.scss$/, loader: 'style-loader!css-loader!sass-loader'}
-		  ],
-		loaders: [
-			{
+		  {test: /\.scss$/, loader: 'style-loader!css-loader!sass-loader'},
+		  {
 
-				test: /\.js$/,
-				exclude: /node_modules/,
-				loader: 'babel-loader',
-				query: {
-					presets: ['react', 'latest']
-				}
-			}
+			test: /\.(js|jsx)$/,
+			exclude: /node_modules/,
+			use: [
+              'babel-loader'
+			]
+	      }
 		]
-	}
+		
+	},
+	plugins: [
+   // new webpack.HotModuleReplacementPlugin(),
+    new webpack.DllReferencePlugin({
+      context: __dirname,
+      manifest: require('./dist/vendors-manifest.json')
+    })
+  
+  ]
 }
